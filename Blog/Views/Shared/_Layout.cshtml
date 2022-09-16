@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/Blog.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/JQuery"></script>
+    <script src="@Url.Content("~/Scripts/Twitter.js")" type="text/javascript"></script>
+    @RenderSection("ExtraHeaders", false)
+</head>
+
+<body>
+    <div id="header">
+        <a href="@Href("~/")"><img width="150" src="@Href("~/Content/Images/title.jpg")" alt="Onur ÜLKER" /></a>
+    </div>
+    <div id="content">
+        <div id="topSeperator" class="seperator"></div>
+        <div id="sidebar">
+            <img width="100" height="100" id="portal" src="@Href("~/Content/Images/portal.jpeg")" alt="portal" />
+            <div id="twitterHeader"><a href="#">Onur ÜLKER on Twitter</a></div>
+            <div id="tweets"></div>
+            <div id="feedList"><a href="@Href("~/Posts/RSS")">RSS Feed</a></div>
+        </div>
+        <div id="main">
+            @RenderBody()
+        </div>
+        <div id="buttomSeperator" class="seperator"></div>
+    </div>
+    <div id="footer">
+        <div id="copyright">Copyright &copy; @DateTime.Now.Year, Onur ÜLKER </div>
+        @if (ViewBag.IsAdmin ?? false)
+        {
+            <div class="controlPanel">
+                <a href="@Href("~/Posts/Edit")">New Post</a>
+                <a href="@Href("~/Accounts/Logout")">Logout</a>
+            </div>
+        }
+        else
+        {
+            <div class="controlPanel">
+                <a href="@Href("~/Accounts/Login")">Login</a>
+            </div>
+        }
+    </div>
+</body>
+
+</html>

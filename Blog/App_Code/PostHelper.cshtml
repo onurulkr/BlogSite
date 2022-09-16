@@ -1,0 +1,93 @@
+﻿@using Blog.Models;
+
+@helper Render(Post post, System.Web.Mvc.HtmlHelper html, bool isAdmin, bool showComments)
+{
+    <div class="postTitle"><a href="@Href("~/Posts/Details/"+post.Id)">@post.Title</a></div>
+    <div class="postContainer">
+        <div class="postTabs">
+            <div class="dateTab">
+                <div class="month">@post.DateTime.Value.ToString("MMM").ToUpper()</div>
+                <div class="day">@post.DateTime.Value.ToString("dd")</div>
+            </div>
+            <div class="commentsTab">
+                <a class="@Href("~/Posts/Details/"+post.Id+"#comments")">
+                    <img width="40" src="@Href("~/Content/Images/comment.png")" alt="Comments" />
+                    @post.Comments.Count
+                </a>
+            </div>
+        </div>
+        <div class="postContent">
+            <div class="postBody">@html.Raw(post.Body)</div>
+            <div class="tagList">
+                @foreach (Tag tag in post.Tags)
+                {
+                    <span class="tag"><a href="@Href("~/Posts/Tags/"+tag.Name)">@tag.Name</a></span>
+                }
+            </div>
+            <div class="linkList">
+                @{
+                    string url = "http://yazilimciningunlugu.com/posts/details/" + post.Id;
+                    string encodedUrl = HttpUtility.UrlEncode(url);
+                    string encodedTitle = HttpUtility.UrlEncode(post.Title);
+                }
+                <a href="http://reddit.com/submit?url=@encodedUrl&title=@encodedTitle"><img src="@Href("~/Content/Images/submit.jpg")" alt="submit" width="100" height="50" /></a>
+                <a href="http://https://digg.com/submit?url=@encodedUrl&amp;title=@encodedTitle"><img src="@Href("~/Content/Images/help.jpg")" alt="help" width="100" height="50" /></a>
+                <a href="http://twitter.com/share" class="twitter-share-button" data-url="@encodedUrl" data-text="@encodedTitle" data-count="none">Tweet</a>
+                <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+
+            </div>
+        </div>
+
+        @if (isAdmin)
+        {
+            <div class="postControlPanel">
+                <a href="@Href("~/Posts/Delete/"+post.Id)">Delete</a>
+                <a href="@Href("~/Posts/Edit/"+post.Id)">Edit</a>
+            </div>
+        }
+
+    </div>
+
+    if (showComments)
+    {
+        <div id="commentContainer">
+            <a id="comments"></a>
+            @foreach (Comment comment in post.Comments.OrderBy(x => x.DateTime))
+            {
+                <div class="comment">
+                    <div class="commentName">
+                        @if (!string.IsNullOrWhiteSpace(comment.Email))
+                        {
+                            <a href="mailto:@comment.Email">@comment.Name</a>
+                        }
+                        else
+                        {
+                            @comment.Name;
+                        }
+                    </div>
+                    said:
+                    <div class="commentBody">@html.Raw(html.Encode(comment.Body).Replace("\n", "<br/>"))</div>
+                    <div class="commentTime">at @comment.DateTime.Value.ToString("HH:mm") on @comment.DateTime.Value.ToString("yyyy/MM/dd")</div>
+
+                    @if (isAdmin)
+                    {
+                        <div class="CommentControlPanel">
+                            <a href="@Href("~/Posts/DeleteComment/"+comment.Id)">Delete</a>
+                        </div>
+                    }
+
+                </div>
+            }
+            <div id="commentEditor">
+                <div id="commentPrompt">Leave a comment!</div>
+                <form action="@Href("~/Posts/Comment/"+post.Id)" method="post">
+                    <input type="text" id="commentNamePrompt" name="name" />Name (Required) <br />
+                    <input type="text" id="commentEmailPrompt" name="email" />Email (Optional) <br />
+                    <textarea id="commentBodyInput" name="body" rows="10" cols="60"></textarea> <br />
+                    <input type="submit" id="commentSubmitInput" name="submit" value="Submit!" />
+                </form>
+            </div>
+        </div>
+    }
+
+}
